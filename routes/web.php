@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\SupplierController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -34,6 +35,8 @@ Route::middleware('auth')->group(function () {
         Route::resource('products', ProductController::class);
         // Categories CRUD (sans show car pas necessaire)
         Route::resource('categories', CategoryController::class)->except(['show']);
+        // Suppliers CRUD
+        Route::resource('suppliers', SupplierController::class);
     });
 
     // Vendeur routes (accessible by both vendeur and gerant)
