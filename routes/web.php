@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -28,7 +29,8 @@ Route::middleware('auth')->group(function () {
 
     // Gerant only routes
     Route::middleware('role:gerant')->prefix('gerant')->name('gerant.')->group(function () {
-        // Future routes: products, suppliers, stock entries, users, reports
+        // Products CRUD
+        Route::resource('products', ProductController::class);
     });
 
     // Vendeur routes (accessible by both vendeur and gerant)

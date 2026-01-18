@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Storage;
 
 class Product extends Model
 {
@@ -54,5 +55,22 @@ class Product extends Model
     public function isLowStock(): bool
     {
         return $this->quantity <= $this->stock_alert;
+    }
+
+    public function getMargeAttribute(): float
+    {
+        return $this->sale_price - $this->purchase_price;
+    }
+
+    public function getMargePercentAttribute(): float
+    {
+        return $this->purchase_price > 0
+            ? ($this->marge / $this->purchase_price) * 100
+            : 0;
+    }
+
+    public function getImageUrlAttribute(): ?string
+    {
+        return $this->image ? Storage::url($this->image) : null;
     }
 }
