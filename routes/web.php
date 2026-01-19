@@ -6,6 +6,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\StockEntryController;
 use App\Http\Controllers\SupplierController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -40,6 +41,8 @@ Route::middleware('auth')->group(function () {
         Route::resource('suppliers', SupplierController::class);
         // Stock Entries CRUD
         Route::resource('stock-entries', StockEntryController::class);
+        // Users CRUD
+        Route::resource('users', UserController::class);
     });
 
     // Vendeur routes (accessible by both vendeur and gerant)
