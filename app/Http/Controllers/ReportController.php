@@ -116,9 +116,26 @@ class ReportController extends Controller
      */
     public function stockEntriesBySupplier(Request $request)
     {
+        $dateFrom = $request->input('date_from');
+        $dateTo = $request->input('date_to');
+
         $query = Supplier::select('suppliers.*')
-            ->withCount(['stockEntries as total_entries'])
-            ->withSum('stockEntries as total_quantity', 'quantity');
+            ->withCount(['stockEntries as total_entries' => function ($q) use ($dateFrom, $dateTo) {
+                if ($dateFrom) {
+                    $q->whereDate('date', '>=', $dateFrom);
+                }
+                if ($dateTo) {
+                    $q->whereDate('date', '<=', $dateTo);
+                }
+            }])
+            ->withSum(['stockEntries as total_quantity' => function ($q) use ($dateFrom, $dateTo) {
+                if ($dateFrom) {
+                    $q->whereDate('date', '>=', $dateFrom);
+                }
+                if ($dateTo) {
+                    $q->whereDate('date', '<=', $dateTo);
+                }
+            }], 'quantity');
 
         if ($request->filled('date_from')) {
             $query->whereHas('stockEntries', function ($q) use ($request) {
@@ -229,8 +246,23 @@ class ReportController extends Controller
         $products = Product::orderBy('name')->get(['id', 'name', 'sku']);
         $types = StockAdjustment::TYPES;
 
-        // Period summary
-        $periodSummary = (clone $query)->selectRaw('
+        // Period summary - requete separee pour eviter le probleme du clone avec selectRaw
+        $periodSummaryQuery = StockAdjustment::query();
+
+        if ($request->filled('type')) {
+            $periodSummaryQuery->where('type', $request->type);
+        }
+        if ($request->filled('date_from')) {
+            $periodSummaryQuery->whereDate('created_at', '>=', $request->date_from);
+        }
+        if ($request->filled('date_to')) {
+            $periodSummaryQuery->whereDate('created_at', '<=', $request->date_to);
+        }
+        if ($request->filled('product_id')) {
+            $periodSummaryQuery->where('product_id', $request->product_id);
+        }
+
+        $periodSummary = $periodSummaryQuery->selectRaw('
             SUM(CASE WHEN quantity > 0 THEN quantity ELSE 0 END) as added,
             SUM(CASE WHEN quantity < 0 THEN ABS(quantity) ELSE 0 END) as removed,
             COUNT(*) as total_adjustments
