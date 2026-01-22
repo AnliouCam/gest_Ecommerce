@@ -10,6 +10,15 @@ class StockAdjustment extends Model
 {
     use HasFactory;
 
+    public const TYPES = ['perte', 'casse', 'inventaire', 'autre'];
+
+    public const TYPE_LABELS = [
+        'perte' => 'Perte (vol, disparition)',
+        'casse' => 'Casse (produit endommage)',
+        'inventaire' => 'Inventaire (correction apres comptage)',
+        'autre' => 'Autre',
+    ];
+
     protected $fillable = [
         'product_id',
         'user_id',

@@ -4,6 +4,8 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ReportController;
+use App\Http\Controllers\StockAdjustmentController;
 use App\Http\Controllers\StockEntryController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\UserController;
@@ -43,6 +45,16 @@ Route::middleware('auth')->group(function () {
         Route::resource('stock-entries', StockEntryController::class);
         // Users CRUD
         Route::resource('users', UserController::class);
+        // Stock Adjustments (index, create, store, show only - no edit/delete for traceability)
+        Route::resource('stock-adjustments', StockAdjustmentController::class)->only(['index', 'create', 'store', 'show']);
+
+        // Reports
+        Route::prefix('reports')->name('reports.')->group(function () {
+            Route::get('/', [ReportController::class, 'index'])->name('index');
+            Route::get('/low-stock', [ReportController::class, 'lowStock'])->name('low-stock');
+            Route::get('/stock-entries-by-supplier', [ReportController::class, 'stockEntriesBySupplier'])->name('stock-entries-by-supplier');
+            Route::get('/stock-adjustments', [ReportController::class, 'stockAdjustments'])->name('stock-adjustments');
+        });
     });
 
     // Vendeur routes (accessible by both vendeur and gerant)
