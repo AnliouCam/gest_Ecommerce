@@ -5,6 +5,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\SaleController;
 use App\Http\Controllers\StockAdjustmentController;
 use App\Http\Controllers\StockEntryController;
 use App\Http\Controllers\SupplierController;
@@ -54,6 +55,15 @@ Route::middleware('auth')->group(function () {
             Route::get('/low-stock', [ReportController::class, 'lowStock'])->name('low-stock');
             Route::get('/stock-entries-by-supplier', [ReportController::class, 'stockEntriesBySupplier'])->name('stock-entries-by-supplier');
             Route::get('/stock-adjustments', [ReportController::class, 'stockAdjustments'])->name('stock-adjustments');
+        });
+
+        // Sales management (view, cancel)
+        Route::prefix('sales')->name('sales.')->group(function () {
+            Route::get('/', [SaleController::class, 'index'])->name('index');
+            Route::get('/cancelled', [SaleController::class, 'cancelledHistory'])->name('cancelled');
+            Route::get('/{sale}', [SaleController::class, 'show'])->name('show');
+            Route::get('/{sale}/cancel', [SaleController::class, 'cancelForm'])->name('cancel.form');
+            Route::post('/{sale}/cancel', [SaleController::class, 'cancel'])->name('cancel');
         });
     });
 
